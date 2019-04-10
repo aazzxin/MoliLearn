@@ -1,0 +1,88 @@
+var ExtMap = ({
+    'jpg': 'img',
+    'jpeg': 'img',
+    'png': 'img',
+    'gif': 'img',
+    'bmp': 'img',
+    'zip': 'zip',
+    '7z': 'zip',
+    'rar': 'zip',
+    'iso': 'zip',
+    'php': 'code',
+    'py': 'code',
+    'xml': 'doc',
+    'js': 'code',
+    'less': 'code',
+    'sass': 'code',
+    'jade': 'code',
+    'css': 'code',
+    'html': 'code',
+    'htm': 'code',
+    'java': 'code',
+    'wps': 'doc',
+    'wpt': 'doc',
+    'doc': 'doc',
+    'docx': 'doc',
+    'dot': 'doc',
+    'rtf': 'doc',
+    'docm': 'doc',
+    'dotm': 'doc',
+    'et': 'xls',
+    'ett': 'xls',
+    'xls': 'xls',
+    'xlsx': 'xls',
+    'xlsm': 'xls',
+    'xlsb': 'xls',
+    'xlam': 'xls',
+    'xltx': 'xls',
+    'xltm': 'xls',
+    'xlt': 'xls',
+    'xla': 'xls',
+    'xlw': 'xls',
+    'odc': 'xls',
+    'uxdc': 'xls',
+    'txt': 'text',
+    'dbf': 'xls',
+    'prn': 'xls',
+    'csv': 'xls',
+    'dps': 'ppt',
+    'dpt': 'ppt',
+    'pptx': 'ppt',
+    'ppt': 'ppt',
+    'pptm': 'ppt',
+    'ppsx': 'ppt',
+    'pps': 'ppt',
+    'ppsm': 'ppt',
+    'potx': 'ppt',
+    'pot': 'ppt',
+    'potm': 'ppt',
+    'wpd': 'ppt',
+    'pdf': 'pdf',
+    'wxls': 'xls',
+    'wdoc': 'doc',
+    'pom': 'pom',
+    'pof': 'pof',
+    'wppt': 'ppt',
+    'h5': 'h5',
+    'wpsnote': 'note',
+});
+var FtypeMap = ({
+    'team': 'share-folder',
+    'folder': 'folder',
+    'linkfolder': 'share-folder',
+    'wpscourselink': 'wpscourselink',
+    'company': 'company',
+});
+module.exports = (function(fname, ftype) {
+    var icon = FtypeMap[((nt_0 = (ftype), null == nt_0 ? undefined : 'number' === typeof nt_0 ? nt_0 : "" + nt_0))];
+    if (icon) {
+        return (icon)
+    };
+    var splits = fname.split('.');
+    var invalidFile = ftype !== 'file' && ftype !== 'delfile' && ftype !== 'sharefile';
+    if (splits.length === 1 || invalidFile) {
+        return ('unknown')
+    };
+    var ext = splits.pop() || '';
+    return (ExtMap[((nt_1 = (ext.toLowerCase()), null == nt_1 ? undefined : 'number' === typeof nt_1 ? nt_1 : "" + nt_1))] || 'unknown')
+});
