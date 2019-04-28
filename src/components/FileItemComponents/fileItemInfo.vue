@@ -1,15 +1,18 @@
 <template>
   <div class="weui-media-box weui-media-box_text" style="width: 85%;">
-    <div class="weui-media-box__title weui-media-box__title_in-text">
-      {{highlightFname}}
-    </div>
-    <div class="weui-media-box__info" v-if="fsrc||fsize||mtime||mtime_recent||detail||sharer">
-      <div class="weui-media-box__info__meta" v-if="ftype!='wpscourselink'&&showRecentTime">{{date(mtime_recent)}}</div>
-      <div class="weui-media-box__info__meta" v-if="ftype!='wpscourselink'&&showModifyTime">{{date(mtime)}}</div>
-      <div class="weui-media-box__info__meta" v-if="ftype!=='folder'&&fsrc&&showFrom">{{'来自 '+fsrc}} </div>
-      <div class="weui-media-box__info__meta" v-if="detail">{{detail}}</div>
-      <div class="weui-media-box__info__meta" v-if="ftype!=='team'&&sharer&&showSharer">{{sharer}} 分享</div>
-    </div>
+    <navigator url="/pages/exam/main" @click="click" class="card">
+      <div class="weui-media-box__title weui-media-box__title_in-text">
+        {{highlightFname}}
+      </div>
+      <div class="weui-media-box__info" v-if="fsrc||fsize||mtime||mtime_recent||coll||time||total||sharer">
+        <div class="weui-media-box__info__meta" v-if="ftype!='wpscourselink'&&showRecentTime">{{date(mtime_recent)}}</div>
+        <div class="weui-media-box__info__meta" v-if="ftype!='wpscourselink'&&showModifyTime">{{date(mtime)}}</div>
+        <div class="weui-media-box__info__meta" v-if="ftype!=='folder'&&fsrc&&showFrom">{{'来自 '+fsrc}} </div>
+        <div class="weui-media-box__info__meta" v-if="time">发布时间：{{time}}</div>
+        <div class="weui-media-box__info__meta" v-if="coll||total">题目数：{{total}} | 收藏数：{{coll}}</div>
+        <div class="weui-media-box__info__meta" v-if="ftype!=='team'&&sharer&&showSharer">{{sharer}} 分享</div>
+      </div>
+    </navigator>
   </div>
 </template>
 
@@ -34,11 +37,16 @@ export default {
     highlightFname: String,
     highlightCreator: String,
     highlightSharer: String,
-    detail: String
+    coll: Number,
+    time: String,
+    total: Number
   },
   methods: {
     data: function (timestamp) {
       data.relative(timestamp)
+    },
+    click: function () {
+      this.globalData.editableCard = true
     }
   }
 }

@@ -5,7 +5,7 @@
     <div class="usermotto">
       <div class="weui-cells__title"></div>
       <div v-for="(item,index) in cards" :key="index" :id="index">
-        <card :publisher="item.publisher" :time="item.time"></card>
+        <card :title="item.title" :publisher="item.publisher" :time="item.time" :coll="item.coll"></card>
       </div>
     </div>
   </div>
@@ -20,16 +20,23 @@ import api from '@/api/api.js'
 export default {
   data () {
     return {
+      page: 1,
       inputValue: '',
       placeholder: '',
       cards: [
         {
+          cid: 'wx357',
+          title: '标题一',
           publisher: 'user',
-          time: '2018/12/24'
+          time: new Date().toLocaleDateString(),
+          coll: 1
         },
         {
+          cid: 'wx123',
+          title: '标题一',
           publisher: 'asd',
-          time: '2019/01/08'
+          time: new Date().toLocaleDateString(),
+          coll: 153
         }
       ],
       userInfo: {
@@ -73,16 +80,33 @@ export default {
   },
 
   onLoad () {
+    var that = this
     request.request(api.IndexUrl).then(res => {
-      console.log('request')
-      this.setData({
-        cards: res.data.cards
-      })
+      console.log(res)
+      that.cards = res.data
     })
   },
 
   created () {
     // let app = getApp()
+  },
+
+  onReachBottom: function () {
+    var that = this
+    // Do something when page reach bottom.
+    // 显示顶部刷新图标
+    wx.showNavigationBarLoading()
+    request.request(api.IndexUrl, {'page': this.page + 1}).then(res => {
+      console.log(res.data)
+      that.cards = that.cards.concat(res.data)
+      if (res.data.length > 0) {
+        that.page += 1
+      }
+      // 隐藏导航栏加载框
+      wx.hideNavigationBarLoading()
+      // 停止下拉动作
+      wx.stopPullDownRefresh()
+    })
   }
 }
 </script>

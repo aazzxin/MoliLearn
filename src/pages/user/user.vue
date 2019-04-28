@@ -27,7 +27,7 @@
       </navigator>
       <navigator url="" class="weui-cell weui-cell_access" hover-class="weui-cell_active">
         <div class="weui-cell__bd weui-cell_primary">
-          <text>收藏题目</text>
+          <text>收藏题库</text>
         </div>
         <div class="weui-cell__ft weui-cell__ft_in-access"></div>
       </navigator>
@@ -37,12 +37,12 @@
 
 <script>
 import card from '@/components/card'
-import mpBadge from 'mpvue-weui/src/badge'
+import request from '@/utils/request.js'
+import api from '@/api/api.js'
 
 export default {
   components: {
-    card,
-    mpBadge
+    card
   },
   props: {
     tabs: {
@@ -75,16 +75,13 @@ export default {
     /**
      * 获取用户信息
      */
-    wx.getUserInfo({
-      success: function (res) {
-        console.log(res)
-        var avatarUrl = 'userInfo.avatarUrl'
-        var nickName = 'userInfo.nickName'
-        that.setData({
-          [avatarUrl]: res.userInfo.avatarUrl,
-          [nickName]: res.userInfo.nickName
-        })
-      }
+    var userInfo = wx.getStorageSync('userInfo')
+    that.userInfo.avatarUrl = userInfo.avatar
+    that.userInfo.nickName = userInfo.nickName
+    request.request(api.UserinfoUrl).then(res => {
+      that.nums[0] = res.data.collNum
+      that.nums[1] = res.data.cardsNum
+      that.nums[2] = res.data.correctNum
     })
   },
 

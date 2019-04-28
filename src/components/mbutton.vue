@@ -8,6 +8,7 @@
 <script>
 export default {
   props: {
+    index: Number,
     src: {
       type: String,
       value: '/static/images/svgs/note.svg'
@@ -20,7 +21,7 @@ export default {
   },
   methods: {
     click: function () {
-      this.$emit('click')
+      this.$emit('click', this.index)
     }
   }
 }

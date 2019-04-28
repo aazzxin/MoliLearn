@@ -6,12 +6,19 @@
         <div @click="tapOpenDocs" class="open-doc">打开文档</div>
       </div>
     </fileList>
+    <div @click="add" :class="floatBtnClass">
+      <img class="createImgBg" src="/static/images/create_bg.png">
+      <img class="createImg" src="/static/images/create.png">
+    </div>
   </div>
 </template>
 
 <script>
 import fileList from '@/components/fileList'
 import i from '@/utils/util.js'
+import request from '@/utils/request.js'
+import api from '@/api/api.js'
+
 var s = i.hideLoading
 var h = i.showLoading
 
@@ -21,26 +28,30 @@ export default {
   },
   data () {
     return {
+      active: true,
       isCompanyAccount: !1,
       showWechatFile: !0,
       userAdvertBarShown: !1,
       showSlot: true,
       items: [
         {
-          detail: 'this is detail',
-          highlight: {
-            file_name: 'File Name',
-            creator_name: 'creator name'
-          }
+          coll: 155,
+          total: 18,
+          time: new Date().toLocaleDateString(),
+          title: 'File Name'
         },
         {
-          detail: 'this is detail',
-          highlight: {
-            file_name: 'File Name',
-            creator_name: 'creator name'
-          }
+          coll: 12,
+          time: new Date().toLocaleDateString(),
+          total: 24,
+          title: 'File Name'
         }
       ]
+    }
+  },
+  computed: {
+    floatBtnClass () {
+      return `floatBtn ${this.active ? 'active' : ''}`
     }
   },
   methods: {
@@ -50,13 +61,57 @@ export default {
     },
     tapOpenDocs: function () {
       console.log('tap Open Docs')
+    },
+    add: function () {
+      var that = this
+      wx.showModal({
+        content: '确认添加题库',
+        success (res) {
+          if (res.confirm) {
+            that.globalData.cid = null
+            that.globalData.editableCard = true
+            const url = '/pages/exam/main'
+            mpvue.navigateTo({ url })
+          }
+        }
+      })
     }
   },
   onLoad () {
+    var that = this
+    request.request(api.CardsMenu).then(res => {
+      console.log('request cards', res.data)
+      that.items = res.data
+    })
   }
 }
 </script>
 
 <style>
-
+.floatBtn {
+  position: fixed;
+  width: 100px;
+  height: 100px;
+  font-size: 0;
+  line-height: 0;
+  right: 0px;
+  bottom: 5px;
+}
+.createImgBg {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+}
+.createImg {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  width: 40px;
+  height: 40px;
+  justify-content: center;
+  -webkit-transform-origin: center;
+  transform-origin: center;
+  transition-duration: 0.5s;
+  transition-property: all;
+}
 </style>

@@ -12,10 +12,10 @@ function request (url, data = {}, method = 'GET') {
       method: method,
       header: {
         'Content-Type': 'application/json',
-        'X-Nideshop-Token': wx.getStorageSync('token')
+        'X-Molilearn-Token': wx.getStorageSync('token')
       },
       success: function (res) {
-        console.log('success')
+        console.log('request success', res)
         if (res.statusCode === 200) {
           if (res.data.errno === 401) {
             // 需要登录后才可以操作
@@ -122,7 +122,18 @@ function getUserInfo () {
 function showErrorToast (msg) {
   wx.showToast({
     title: msg,
-    image: '/static/images/icon_error.png'
+    image: '/static/images/send-fail.png'
+  })
+}
+function showSuccessToast (msg) {
+  wx.showToast({
+    title: msg,
+    image: '/static/images/send-ok.png'
+  })
+}
+function showLoadingToast () {
+  wx.showToast({
+    icon: 'loading'
   })
 }
 
@@ -131,6 +142,8 @@ export default {
   get,
   post,
   showErrorToast,
+  showSuccessToast,
+  showLoadingToast,
   checkSession,
   login,
   getUserInfo

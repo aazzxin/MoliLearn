@@ -7,6 +7,17 @@ export default {
 
   AuthLoginByWeixin: ApiRootUrl + 'auth/loginByWeixin', // 微信登录
 
+  UserinfoUrl: ApiRootUrl + 'users/info', // 用户业务信息
+
+  CardsMenu: ApiRootUrl + 'cards/menu', // 编辑题库目录
+  AddCard: ApiRootUrl + 'cards/add', // 添加题库
+  EditQuestions: ApiRootUrl + 'questions/editList', // 编辑的题目列表
+  SaveEdit: ApiRootUrl + 'cards/save', // 保存修改题库
+
+  CardTotal: ApiRootUrl + 'cards/total', // 题库总题数
+  QuestionsList: ApiRootUrl + 'questions/list', // 题目列表
+  SubmitAnswer: ApiRootUrl + 'questions/submit', // 提交答案
+
   CollectList: ApiRootUrl + 'collect/list', // 收藏列表
   CollectAddOrDelete: ApiRootUrl + 'collect/addordelete', // 添加或取消收藏
 

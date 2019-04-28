@@ -12,10 +12,8 @@ export default {
     parentid: Number,
     deviceid: Number,
     fsrc: String,
-    fid: String,
     linkgroupid: String,
     fname: String,
-    sid: String,
     path: String,
     fsize: Number,
     isBindTapOperate: Boolean

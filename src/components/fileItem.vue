@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div class="weui-cells" @click="tapFile">
+    <div class="weui-cells" @click="tapFile" hover-class="weui-cell_active">
       <div class="weui-panel__hd">
-        <fileItemInfo :detail="detail" :name="fname" :fsize="fsize" :fsrc="fsrc" :ftype="ftype" :highlightCreator="highlightCreator" :highlightFname="highlightFname" :highlightSharer="highlightSharer" :mtime="mtime" :mtime-recent="mtime_recent" :path="path" :sharer="sharer" :showFrom="showFrom" :showModifyTime="showModifyTime" :showRecentTime="showRecentTime" :showSharer="showSharer" :showSize="showSize"></fileItemInfo>
-        <fileItemMore :deviceid="deviceid" :fid="fid" :fname="fname" :fsize="fsize" :fsrc="fsrc" :ftype="ftype" :groupid="groupid" :isBindTapOperate="isBindTapOperate" :linkgroupid="linkgroupid" :parentid="parentid" :path="path" :sid="sid" v-if="showOperate&&ftype!=='wpscourselink'"></fileItemMore>
+        <fileItemInfo :coll="coll" :time="time" :total="total" :name="fname" :fsize="fsize" :fsrc="fsrc" :ftype="ftype" :highlightCreator="highlightCreator" :highlightFname="highlightFname" :highlightSharer="highlightSharer" :mtime="mtime" :mtime-recent="mtime_recent" :path="path" :sharer="sharer" :showFrom="showFrom" :showModifyTime="showModifyTime" :showRecentTime="showRecentTime" :showSharer="showSharer" :showSize="showSize"></fileItemInfo>
+        <fileItemMore :deviceid="deviceid" :fname="fname" :fsize="fsize" :fsrc="fsrc" :ftype="ftype" :groupid="groupid" :isBindTapOperate="isBindTapOperate" :linkgroupid="linkgroupid" :parentid="parentid" :path="path" :sid="sid" v-if="showOperate&&ftype!=='wpscourselink'"></fileItemMore>
         <fileItemSelect :index="index" :selectedIndexs="selectedIndexs" v-if="showSelect>=3||ftype==='folder'&&showSelect>=2||(ftype==='file'||ftype==='sharefile')&&showSelect>=1"></fileItemSelect>
       </div>
     </div>
@@ -22,8 +22,7 @@ export default {
     fileItemSelect
   },
   props: {
-    fid: String,
-    sid: String,
+    cid: String,
     index: Number,
     ficon: String,
     mtime_recent: Number,
@@ -57,7 +56,9 @@ export default {
     highlightCreator: String,
     highlightSharer: String,
     wpsCourseId: String,
-    detail: String,
+    coll: Number,
+    time: String,
+    total: Number,
     sharer: String,
     showSharer: Boolean,
     linkgroupid: String
@@ -73,6 +74,7 @@ export default {
   methods: {
     tapFile: function (ev) {
       console.log('tap file:', ev)
+      this.globalData.cid = this.cid
     }
   }
 }

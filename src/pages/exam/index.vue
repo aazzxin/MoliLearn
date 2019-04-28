@@ -1,16 +1,25 @@
 <template>
   <div class="panel">
+    <div class="titleInput">
+      <input class="weui-input" :placeholder="titleValue !== '' ? '' : '请输入标题'" v-if="editableCard === true" v-model="titleValue" @focus="inputFocus"></input>
+    </div>
     <div class="panel-exam">
       <div class="questions" v-for="(item,index) in questions" :key="index" :id="index">
-        <question :editable="editable" @edit="edit" :index="item.index" :title="item.title" :type="item.type" :checkboxList="item.checkboxList" :single="item.single" :editStatue="editIndex===index"></question>
+        <question @edit="edit" :qid="item.qid" :index="index + 1" :title="item.title" :type="item.type" 
+        :checkboxList="item.checkboxList" :selectValue="item.selectValue" :single="item.single" @checkboxChange="checkboxChange"
+        :answer="item.answer" :editStatue="editIndex===index" :showAnswer="globalData.showAnswer"
+        @doEdit="doEdit" @doCopy="doCopy" @doUpMove="doUpMove" @doDownMove="doDownMove" @doDelete="doDelete"></question>
+      </div>
+    </div>
+    <div class="add-question-panel" v-if="editableCard">
+      <div class="add-question" @click="addQuestion">
+        <img class="add-question-img" src="/static/images/edit-add@2x.png">
+        <text>添加题目</text>
       </div>
     </div>
     <div class="button-bar">
-      <div class="button-box" v-if="page!==1">
-        <mp-button @click="last" type="default" size="normal" btnClass="lastBtn">上一页</mp-button>
-      </div>
-      <div class="button-box" :style="page===1?'padding-left:50%':''">
-        <mp-button @click="next" type="default" size="normal" btnClass="nextBtn" >下一页</mp-button>
+      <div class="button-box" v-if="isLast">
+        <mp-button @click="comfirm" type="primary" size="normal" btnClass="comfirmBtn">{{comfirmTxt}}</mp-button>
       </div>
     </div>
   </div>
@@ -19,6 +28,8 @@
 <script>
 import mpButton from 'mpvue-weui/src/button'
 import question from '@/components/question'
+import request from '@/utils/request.js'
+import api from '@/api/api.js'
 
 export default {
   components: {
@@ -27,21 +38,29 @@ export default {
   },
   data () {
     return {
+      titleValue: '',
       eid: '',
       page: 1,
-      editable: true,
+      total: 999,
+      size: 5,
       editIndex: -1,
       questions: [
         {
+          qid: 'test1',
           index: 1,
           title: 'question',
           type: 'select',
           checkboxList: [
             {value: 'selection1'},
             {value: 'selection2'}
-          ]
+          ],
+          answer: [
+            0
+          ],
+          selectValue: ['0']
         },
         {
+          qid: 'test2',
           index: 2,
           title: 'question2',
           type: 'select',
@@ -50,9 +69,13 @@ export default {
             {value: 'selection2'},
             {value: 'selection3'}
           ],
-          single: false
+          single: false,
+          answer: [
+            0
+          ]
         },
         {
+          qid: 'test3',
           index: 3,
           title: 'question2',
           type: 'select',
@@ -61,9 +84,13 @@ export default {
             {value: 'selection2'},
             {value: 'selection3'}
           ],
-          single: false
+          single: false,
+          answer: [
+            0
+          ]
         },
         {
+          qid: 'test4',
           index: 4,
           title: 'question2',
           type: 'select',
@@ -72,9 +99,13 @@ export default {
             {value: 'selection2'},
             {value: 'selection3'}
           ],
-          single: false
+          single: false,
+          answer: [
+            0, 2
+          ]
         },
         {
+          qid: 'test5',
           index: 5,
           title: 'question2',
           type: 'select',
@@ -84,25 +115,210 @@ export default {
             {value: 'selection3'},
             {value: 'selection4'}
           ],
-          single: false
+          single: false,
+          answer: [
+            0, 1, 3
+          ]
         }
-      ]
+      ],
+      answers: {
+      },
+      compareAnswer: false
+    }
+  },
+  computed: {
+    isLast () {
+      return this.page === this.total
+    },
+    editableCard () {
+      return this.globalData.editableCard
+    },
+    comfirmTxt () {
+      return this.editableCard ? '保存修改' : '提交答案'
     }
   },
   methods: {
+    inputFocus: function (ev) {
+      console.log(ev)
+    },
     edit: function (index) {
       this.editIndex = index
     },
-    last: function () {
-      this.page -= 1
-      console.log(this.page)
+    checkboxChange: function (qid, value) {
+      this.answers[qid] = value
+      console.log('answers', this.answers)
     },
-    next: function () {
-      this.page += 1
-      console.log(this.page)
+    loadQst: function (callback) {
+      var that = this
+      request.request(this.globalData.editableCard ? api.EditQuestions : api.QuestionsList, {cid: this.globalData.cid, page: this.page + 1, size: this.size}).then(res => {
+        console.log('request questions', res)
+        if (res.data.length > 0) {
+          that.page += 1
+          that.questions = that.questions.concat(res.data.questions)
+        } else {
+          that.total = that.page
+        }
+
+        if (callback) {
+          callback()
+        }
+      })
+    },
+    submitComfirm: function () {
+      var that = this
+      request.request(api.SubmitAnswer, {cid: this.cid, answers: this.answers}).then(res => {
+        that.globalData.showAnswer = true
+        that.compareAnswer = true
+        that.page = 1
+        for (let i = 0; i < that.questions.length; i++) {
+          let qid = that.questions[i].qid
+          if (res.data[qid]) {
+            that.questions[i].answer = res.data[qid]
+          }
+        }
+      })
+    },
+    doEdit: function () {
+      this.globalData.editQuestion = this.questions[this.editIndex]
+      const url = '/pages/question/main'
+      mpvue.navigateTo({ url })
+    },
+    doCopy: function () {
+      let index = this.editIndex
+      this.questions.splice(index, 0, this.questions[index])
+    },
+    doUpMove: function () {
+      let index = this.editIndex
+      if (index > 0) {
+        console.log(index)
+        let temp = this.questions[index]
+        this.questions[index] = this.questions[index - 1]
+        this.questions[index - 1] = temp
+        this.editIndex -= 1
+      }
+    },
+    doDownMove: function () {
+      let index = this.editIndex
+      if (index < this.questions.length - 1) {
+        console.log(index)
+        let temp = this.questions[index]
+        this.questions[index] = this.questions[index + 1]
+        this.questions[index + 1] = temp
+        this.editIndex += 1
+      }
+    },
+    doDelete: function () {
+      let that = this
+      wx.showModal({
+        content: '确认删除',
+        success (res) {
+          if (res.confirm) {
+            that.questions.splice(that.editIndex, 1)
+            that.editIndex = -1
+          }
+        }
+      })
+    },
+    addQuestion: function () {
+      this.editIndex = -1
+      this.globalData.editQuestion = null
+      const url = '/pages/question/main'
+      mpvue.navigateTo({ url })
+    },
+    saveComfirm: function () {
+      // 检测
+      if (this.titleValue === '') {
+        request.showErrorToast('请填写题库标题')
+        return
+      }
+      // 刷新index
+      for (let i = 0; i < this.questions.length; i++) {
+        if (!this.questions[i].selectValue || this.questions[i].selectValue.length === 0) {
+          request.showErrorToast('请为选择题勾选答案')
+          return
+        }
+        this.questions[i].index = i + 1
+      }
+      var that = this
+      wx.showModal({
+        content: '确认保存修改',
+        success (res) {
+          if (res.confirm) {
+            if (that.cid) {
+              // cid不为空则修改题库
+              that.request.request(api.SaveEdit, {cid: that.cid, questions: that.questions}).then(res => {
+
+              })
+            } else {
+              // 否则为新建题库
+              that.request.request(api.AddCard, {questions: that.questions}).then(res => {
+
+              })
+            }
+
+          }
+        }
+      })
+    },
+    comfirm: function () {
+      var that = this
+      if (that.editableCard) {
+        that.saveComfirm()
+      } else {
+        wx.showModal({
+          content: '确认提交答案',
+          success (res) {
+            if (res.confirm) {
+              that.submitComfirm()
+            } else if (res.cancel) {
+            }
+          }
+        })
+      }
     }
   },
   onLoad () {
+    this.answers = {}
+    this.compareAnswer = false
+    this.globalData.showAnswer = false
+    this.loadedQsts = []
+    this.page = 0
+    this.questions = []
+    var that = this
+    request.request(api.CardTotal, {cid: this.globalData.cid}).then(res => {
+      that.total = res.data
+    })
+    this.loadQst()
+  },
+  onShow () {
+    let pages = getCurrentPages()
+    let currPage = pages[pages.length - 1]
+    if (currPage.data.editQst && currPage.data.editQst !== null) {
+      console.log('edit qst success!', currPage.data)
+      if (this.editIndex === -1) {
+        this.questions.push(currPage.data.editQst)
+      } else {
+        this.questions[this.editIndex] = currPage.data.editQst
+      }
+      currPage.data.editQst = null
+    }
+    this.$forceUpdate()
+  },
+  onReachBottom: function () {
+    // Do something when page reach bottom.
+    // 显示顶部刷新图标
+    if (!this.isLast) {
+      wx.showNavigationBarLoading()
+      this.loadQst(function () {
+        // 隐藏导航栏加载框
+        wx.hideNavigationBarLoading()
+        // 停止下拉动作
+        wx.stopPullDownRefresh()
+      })
+    } else {
+      // 停止下拉动作
+      wx.stopPullDownRefresh()
+    }
   }
 }
 </script>
@@ -113,14 +329,21 @@ export default {
   display: flex;
   padding-bottom: 1em;
 }
+.titleInput {
+  display: flex;
+  flex-direction: column;
+  padding: 3px 6px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  flex-wrap: wrap;
+  border-bottom: 1px solid darkolivegreen;
+}
 .panel-exam {
   display: flex;
   flex-direction: column;
   width: 100%;
-  padding-left: 15px;
-  padding-right: 15px;
-  margin-bottom: 0.3em;
-  height: 98%;
+  height: 95%;
   background-color: #e5e5e5;
 }
 .questions {
@@ -128,22 +351,40 @@ export default {
   flex-direction: column;
   width: 100%;
 }
+.add-question-panel {
+  background: #e5e5e5;
+  width: 100%;
+}
+.add-question {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  margin-top: 25px;
+  margin-left: 15px;
+  margin-right: 15px;
+  margin-bottom: 25px;
+  background: white;
+}
+.add-question-img {
+  width: 24px;
+  height: 24px;
+  padding-right: 2px;
+}
 .button-bar {
   position: fixed;
-  bottom: 0px;
+  bottom: -6px;
   width: 100%;
   display: flex;
   flex-direction: row;
   -webkit-box-flex: 1;
   -webkit-flex: auto;
   flex: auto;
+  margin-top: 1.2em;
   background: #fff;
 }
 .button-box {
-  width: 50%;
-}
-.lastBtn,
-.nextBtn {
   width: 100%;
 }
 </style>

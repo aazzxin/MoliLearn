@@ -1,10 +1,12 @@
 {
   "pages": [
+    "pages/login/main",
     "pages/index/main",
     "pages/menu/main",
-    "pages/counter/main",
     "pages/user/main",
-    "pages/exam/main"
+    "pages/exam/main",
+    "pages/counter/main",
+    "pages/question/main"
   ],
   "window": {
     "backgroundTextStyle": "light",

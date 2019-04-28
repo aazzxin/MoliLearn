@@ -1,9 +1,9 @@
 <template>
   <div class="panel">
-    <div class="panel-main" @click="edit">
+    <div :class="panelClass" @click="edit">
       <div class="weui-media-box__title">
         <div class="question-index">
-          第{{index}}题
+          {{index}}.
         </div>
         <div class="question-title">
           {{title}}
@@ -11,12 +11,12 @@
       </div>
       <div class="answer-box">
         <div class="selection" v-if="type==='select'">
-          <mpCheckbox :disabled="disabledCheck" :list="checkboxList" :single="single" v-model="selectValue" @input="checkboxChange"></mpCheckbox>
+          <mpCheckbox :disabled="disabledCheck" :showCorrect="showAnswer" :list="checkboxList" :single="single" :answer="answer" v-model="selectValue" @input="checkboxChange"></mpCheckbox>
         </div>
       </div>
     </div>
     <div class="edit-bar" v-if="editStatue" v-for="(btn,index) in editBtns" :key="index" :id="index">
-      <mbutton :src="btn.src" :text="btn.text"></mbutton>
+      <mbutton :src="btn.src" :index="index" :text="btn.text" @click="editClick"></mbutton>
     </div>
   </div>
 </template>
@@ -31,7 +31,7 @@ export default {
     mbutton
   },
   props: {
-    editable: Boolean,
+    qid: String,
     index: Number,
     title: String,
     type: {
@@ -40,7 +40,13 @@ export default {
     },
     single: Boolean,
     checkboxList: Array,
+    answer: Array,
+    selectValue: Array,
     editStatue: {
+      type: Boolean,
+      value: false
+    },
+    showAnswer: {
       type: Boolean,
       value: false
     }
@@ -48,7 +54,6 @@ export default {
   data () {
     return {
       disabledCheck: false,
-      selectValue: [],
       editBtns: [
         {
           src: '/static/images/svgs/note.svg',
@@ -73,21 +78,55 @@ export default {
       ]
     }
   },
+  computed: {
+    panelClass () {
+      return `panel-main ${this.editStatue ? 'panel-main-edit' : ''}`
+    },
+    editable () {
+      return this.globalData.editableCard
+    }
+  },
   methods: {
     checkboxChange: function (value) {
       console.log('check:', value)
+      this.$emit('checkboxChange', this.qid, value)
     },
     edit: function () {
-      if (this.editable) {
+      if (this.globalData.editableCard) {
         // this.editStatue = !this.editStatue
         this.$emit('edit', this.editStatue ? -1 : this.index - 1)
+      }
+    },
+    editClick: function (index) {
+      switch (index) {
+        case 0:
+          console.log('编辑')
+          this.$emit('doEdit')
+          break
+        case 1:
+          console.log('复制')
+          this.$emit('doCopy')
+          break
+        case 2:
+          console.log('上移')
+          this.$emit('doUpMove')
+          break
+        case 3:
+          console.log('下移')
+          this.$emit('doDownMove')
+          break
+        case 4:
+          console.log('删除')
+          this.$emit('doDelete')
+          break
+        default:
+          break
       }
     }
   },
   onLoad () {
-    if (this.editable) {
-      this.disabledCheck = true
-    }
+    this.editStatue = false
+    this.disabledCheck = this.globalData.editableCard
   }
 }
 </script>
@@ -109,7 +148,7 @@ export default {
 .panel:first-child::before {
   height: 0;
 }
-.panel::before {
+.panel:before {
   top: 0;
   border-top: 1rpx solid darkgray;
 }
@@ -124,6 +163,11 @@ export default {
 .panel:after {
   bottom: 0;
 }
+.panel-main-edit {
+  border-left: 1px dashed;
+  border-radius: 1px;
+  border-spacing: 1px;
+}
 .panel-main {
   display: flex;
   flex-direction: column;
@@ -132,14 +176,18 @@ export default {
 .weui-media-box__title {
   display: flex;
   display: -webkit-flex;
-  padding-left: 1em;
+  padding: 1px 1em;
   flex-direction: row;
   background: white;
 }
 .question-index {
-  font-size: 20px;
+  font: 20px bold;
   font-family: '微软雅黑';
   padding-right: 1em;
+}
+.question-title {
+  font: 18px ;
+  font-family: '微软雅黑';
 }
 .answer-box {
   background: white;
