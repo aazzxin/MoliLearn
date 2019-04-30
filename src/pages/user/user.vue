@@ -71,21 +71,21 @@ export default {
   },
 
   onLoad () {
-    var that = this
     /**
      * 获取用户信息
      */
     var userInfo = wx.getStorageSync('userInfo')
-    that.userInfo.avatarUrl = userInfo.avatar
-    that.userInfo.nickName = userInfo.nickName
+    this.userInfo.avatarUrl = userInfo.avatar
+    this.userInfo.nickName = userInfo.nickName
+  },
+  onShow () {
+    var that = this
     request.request(api.UserinfoUrl).then(res => {
       that.nums[0] = res.data.collNum
       that.nums[1] = res.data.cardsNum
       that.nums[2] = res.data.correctNum
     })
-  },
-
-  created () {
+    this.$forceUpdate()
   }
 }
 </script>

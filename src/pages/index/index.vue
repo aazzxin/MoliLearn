@@ -46,13 +46,22 @@ export default {
       index: {}
     }
   },
-
   components: {
     card,
     mpSearchbar
   },
-
   methods: {
+    init (callback) {
+      var that = this
+      that.page = 1
+      request.request(api.IndexUrl).then(res => {
+        console.log(res)
+        that.cards = res.data
+        if (callback) {
+          callback()
+        }
+      })
+    },
     clickHandle (ev) {
       console.log('clickHandle:', ev)
       // throw {message: 'custom test'}
@@ -70,20 +79,31 @@ export default {
       console.log('confirm:', ev)
     }
   },
-
   onLoad () {
-    var that = this
-    request.request(api.IndexUrl).then(res => {
-      console.log(res)
-      that.cards = res.data
-    })
+    this.init()
   },
-
   created () {
     // let app = getApp()
   },
-
-  onReachBottom: function () {
+  onShow () {
+    let pages = getCurrentPages()
+    let currPage = pages[pages.length - 1]
+    if (currPage.data.submitSuccess && currPage.data.submitSuccess === true) {
+      this.init()
+      currPage.data.submitSuccess = false
+    }
+  },
+  onPullDownRefresh () {
+    // 显示顶部刷新图标
+    wx.showNavigationBarLoading()
+    this.init(() => {
+      // 隐藏导航栏加载框
+      wx.hideNavigationBarLoading()
+      // 停止下拉动作
+      wx.stopPullDownRefresh()
+    })
+  },
+  onReachBottom () {
     var that = this
     // Do something when page reach bottom.
     // 显示顶部刷新图标

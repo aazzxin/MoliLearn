@@ -28,7 +28,7 @@ export default {
   methods: {
     click: function () {
       this.globalData.editableCard = false
-      this.globalData.cid = this.cid
+      this.globalData.editCard.cid = this.cid
     }
   }
 }

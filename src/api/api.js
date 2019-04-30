@@ -2,9 +2,6 @@ const ApiRootUrl = 'https://molicaen.cn/api/'
 
 export default {
   IndexUrl: ApiRootUrl + 'index/index', // 首页数据接口
-  CatalogList: ApiRootUrl + 'catalog/index', // 分类目录全部分类数据接口
-  CatalogCurrent: ApiRootUrl + 'catalog/current', // 分类目录当前分类数据接口
-
   AuthLoginByWeixin: ApiRootUrl + 'auth/loginByWeixin', // 微信登录
 
   UserinfoUrl: ApiRootUrl + 'users/info', // 用户业务信息
@@ -13,6 +10,8 @@ export default {
   AddCard: ApiRootUrl + 'cards/add', // 添加题库
   EditQuestions: ApiRootUrl + 'questions/editList', // 编辑的题目列表
   SaveEdit: ApiRootUrl + 'cards/save', // 保存修改题库
+  RenameCard: ApiRootUrl + 'cards/rename', // 重命名
+  DeleteCard: ApiRootUrl + 'cards/delete', // 删除题库
 
   CardTotal: ApiRootUrl + 'cards/total', // 题库总题数
   QuestionsList: ApiRootUrl + 'questions/list', // 题目列表

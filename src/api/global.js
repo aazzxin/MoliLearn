@@ -1,6 +1,9 @@
 const global = {
   editableCard: false,
-  cid: '',
+  editCard: {
+    cid: '',
+    title: ''
+  },
   editQuestion: {
     title: ''
   }

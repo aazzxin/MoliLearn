@@ -46,6 +46,7 @@ export default {
       data.relative(timestamp)
     },
     click: function () {
+      console.log('click info')
       this.globalData.editableCard = true
     }
   }

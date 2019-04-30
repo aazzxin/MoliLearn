@@ -3,7 +3,7 @@
     <div class="weui-cells" @click="tapFile" hover-class="weui-cell_active">
       <div class="weui-panel__hd">
         <fileItemInfo :coll="coll" :time="time" :total="total" :name="fname" :fsize="fsize" :fsrc="fsrc" :ftype="ftype" :highlightCreator="highlightCreator" :highlightFname="highlightFname" :highlightSharer="highlightSharer" :mtime="mtime" :mtime-recent="mtime_recent" :path="path" :sharer="sharer" :showFrom="showFrom" :showModifyTime="showModifyTime" :showRecentTime="showRecentTime" :showSharer="showSharer" :showSize="showSize"></fileItemInfo>
-        <fileItemMore :deviceid="deviceid" :fname="fname" :fsize="fsize" :fsrc="fsrc" :ftype="ftype" :groupid="groupid" :isBindTapOperate="isBindTapOperate" :linkgroupid="linkgroupid" :parentid="parentid" :path="path" :sid="sid" v-if="showOperate&&ftype!=='wpscourselink'"></fileItemMore>
+        <fileItemMore @rename="rename" @edit="edit" @del="del"></fileItemMore>
         <fileItemSelect :index="index" :selectedIndexs="selectedIndexs" v-if="showSelect>=3||ftype==='folder'&&showSelect>=2||(ftype==='file'||ftype==='sharefile')&&showSelect>=1"></fileItemSelect>
       </div>
     </div>
@@ -11,6 +11,8 @@
 </template>
 
 <script>
+import request from '@/utils/request.js'
+import api from '@/api/api.js'
 import fileItemInfo from '@/components/FileItemComponents/fileItemInfo'
 import fileItemMore from '@/components/FileItemComponents/fileItemMore'
 import fileItemSelect from '@/components/FileItemComponents/fileItemSelect'
@@ -65,16 +67,35 @@ export default {
   },
   data () {
     return {
-      fileSid: '',
-      platform: '',
-      wpsCourseAppid: 'wx8b11aa0e50eb061a',
-      wpsCoursePath: 'src/pages/timetable/index'
     }
   },
   methods: {
     tapFile: function (ev) {
-      console.log('tap file:', ev)
-      this.globalData.cid = this.cid
+      this.globalData.editCard.cid = this.cid
+      this.globalData.editCard.title = this.highlightFname
+    },
+    rename () {
+      this.$emit('rename')
+    },
+    edit () {
+      console.log('edit')
+      this.globalData.editableCard = true
+      const url = '/pages/exam/main'
+      mpvue.navigateTo({ url })
+    },
+    del () {
+      console.log('del')
+      const that = this
+      wx.showModal({
+        content: '确认删除该题库',
+        success (res) {
+          if (res.confirm) {
+            request.request(api.DeleteCard, {cid: that.cid}).then(res => {
+              that.$emit('refresh')
+            })
+          }
+        }
+      })
     }
   }
 }

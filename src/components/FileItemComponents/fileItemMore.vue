@@ -7,16 +7,6 @@
 <script>
 export default {
   props: {
-    ftype: String,
-    groupid: Number,
-    parentid: Number,
-    deviceid: Number,
-    fsrc: String,
-    linkgroupid: String,
-    fname: String,
-    path: String,
-    fsize: Number,
-    isBindTapOperate: Boolean
   },
   methods: {
     tapMore: function () {
@@ -30,7 +20,7 @@ export default {
       })
     },
     getItemList: function () {
-      var e = ['重命名', '编辑', '选择多项', '删除']
+      var e = ['重命名', '编辑', '删除']
       return e
     },
     mapHandler: function (e) {
@@ -46,11 +36,6 @@ export default {
           t = 'more_rename_click'
           break
 
-        case '选择多项':
-          this.multiple()
-          t = 'more_multiselect_click'
-          break
-
         case '删除':
           this.del()
           t = 'more_delete_click'
@@ -60,22 +45,13 @@ export default {
       console.log(t)
     },
     rename: function () {
-      var e = this.props
-      var t = e.groupid
-      var i = e.fid
-      var r = e.fname
-      var o = e.ftype
-      o === 'team' ? this.toRename(t, '0', r, o) : this.toRename(t, i, r, o)
-    },
-    toRename: function (e, t, i, r) {
-
+      this.$emit('rename')
     },
     edit: function () {
-    },
-    multiple: function () {
-
+      this.$emit('edit')
     },
     del: function () {
+      this.$emit('del')
     }
   }
 }

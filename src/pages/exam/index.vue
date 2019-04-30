@@ -38,6 +38,7 @@ export default {
   },
   data () {
     return {
+      editableCard: false,
       titleValue: '',
       cid: '',
       page: 0,
@@ -130,9 +131,6 @@ export default {
     isLast () {
       return this.questions.length === this.total
     },
-    editableCard () {
-      return this.globalData.editableCard
-    },
     comfirmTxt () {
       return this.editableCard ? '保存修改' : this.compareAnswer ? '确认' : '提交答案'
     }
@@ -163,8 +161,8 @@ export default {
         that.$forceUpdate()
 
         if (callback) {
-          callback()
         }
+          callback()
       })
     },
     submitComfirm: function () {
@@ -244,6 +242,7 @@ export default {
     },
     // 通知上一页编辑成功
     editSuccess: function () {
+      console.log('edit success')
       var pages = getCurrentPages()
       var prevPage = pages[pages.length - 2]
       prevPage.setData({
@@ -276,38 +275,49 @@ export default {
             if (that.cid) {
               // cid不为空则修改题库
               request.request(api.SaveEdit, {cid: that.cid, title: that.titleValue, questions: that.questions}).then(res => {
-                if (res.data.errno === 0) {
-                  that.editSuccess()
-                }
+                that.editSuccess()
               })
             } else {
               // 否则为新建题库
               request.request(api.AddCard, {title: that.titleValue, questions: that.questions}).then(res => {
-                if (res.data.errno === 0) {
-                  that.editSuccess()
-                }
+                that.editSuccess()
               })
             }
           }
         }
       })
     },
+    backComifrm: function () {
+      // 标记答题后返回
+      var pages = getCurrentPages()
+      var prevPage = pages[pages.length - 2]
+      prevPage.setData({
+        submitSuccess: true
+      })
+      wx.navigateBack({
+        delta: 1
+      })
+    },
     comfirm: function () {
       if (this.editableCard) {
         this.saveComfirm()
       } else if (this.compareAnswer) {
+        this.backComifrm()
       } else {
         this.submitComfirm()
       }
     }
   },
   onLoad () {
-    this.cid = this.globalData.cid
+    this.editableCard = this.globalData.editableCard
+    this.cid = this.globalData.editCard.cid
+    this.titleValue = this.globalData.editCard.title
     this.answers = {}
     this.compareAnswer = false
     this.loadedQsts = []
     this.page = 0
     this.questions = []
+    this.editIndex = -1
     var that = this
     request.request(api.CardTotal, {cid: this.cid}).then(res => {
       that.total = res.data
