@@ -7,7 +7,7 @@
       <div class="questions" v-for="(item,index) in questions" :key="index" :id="index">
         <question @edit="edit" :qid="item.qid" :index="index + 1" :title="item.title" :type="item.type" 
         :checkboxList="item.checkboxList" :selectValue="item.selectValue" :single="item.single" @checkboxChange="checkboxChange"
-        :answer="item.answer" :editStatue="editIndex===index" :showAnswer="globalData.showAnswer"
+        :answer="item.answer" :editStatue="editIndex===index" :showAnswer="compareAnswer"
         @doEdit="doEdit" @doCopy="doCopy" @doUpMove="doUpMove" @doDownMove="doDownMove" @doDelete="doDelete"></question>
       </div>
     </div>
@@ -18,7 +18,7 @@
       </div>
     </div>
     <div class="button-bar">
-      <div class="button-box" v-if="isLast">
+      <div class="button-box" v-if="isLast || editableCard">
         <mp-button @click="comfirm" type="primary" size="normal" btnClass="comfirmBtn">{{comfirmTxt}}</mp-button>
       </div>
     </div>
@@ -39,8 +39,8 @@ export default {
   data () {
     return {
       titleValue: '',
-      eid: '',
-      page: 1,
+      cid: '',
+      page: 0,
       total: 999,
       size: 5,
       editIndex: -1,
@@ -51,8 +51,8 @@ export default {
           title: 'question',
           type: 'select',
           checkboxList: [
-            {value: 'selection1'},
-            {value: 'selection2'}
+            'selection1',
+            'selection2'
           ],
           answer: [
             0
@@ -65,9 +65,9 @@ export default {
           title: 'question2',
           type: 'select',
           checkboxList: [
-            {value: 'selection1'},
-            {value: 'selection2'},
-            {value: 'selection3'}
+            'selection1',
+            'selection2',
+            'selection3'
           ],
           single: false,
           answer: [
@@ -80,9 +80,9 @@ export default {
           title: 'question2',
           type: 'select',
           checkboxList: [
-            {value: 'selection1'},
-            {value: 'selection2'},
-            {value: 'selection3'}
+            'selection1',
+            'selection2',
+            'selection3'
           ],
           single: false,
           answer: [
@@ -95,9 +95,9 @@ export default {
           title: 'question2',
           type: 'select',
           checkboxList: [
-            {value: 'selection1'},
-            {value: 'selection2'},
-            {value: 'selection3'}
+            'selection1',
+            'selection2',
+            'selection3'
           ],
           single: false,
           answer: [
@@ -110,10 +110,10 @@ export default {
           title: 'question2',
           type: 'select',
           checkboxList: [
-            {value: 'selection1'},
-            {value: 'selection2'},
-            {value: 'selection3'},
-            {value: 'selection4'}
+            'selection1',
+            'selection2',
+            'selection3',
+            'selection4'
           ],
           single: false,
           answer: [
@@ -128,13 +128,13 @@ export default {
   },
   computed: {
     isLast () {
-      return this.page === this.total
+      return this.questions.length === this.total
     },
     editableCard () {
       return this.globalData.editableCard
     },
     comfirmTxt () {
-      return this.editableCard ? '保存修改' : '提交答案'
+      return this.editableCard ? '保存修改' : this.compareAnswer ? '确认' : '提交答案'
     }
   },
   methods: {
@@ -144,20 +144,23 @@ export default {
     edit: function (index) {
       this.editIndex = index
     },
-    checkboxChange: function (qid, value) {
+    checkboxChange: function (qid, index, value) {
       this.answers[qid] = value
       console.log('answers', this.answers)
+      this.questions[index].selectValue = value
     },
     loadQst: function (callback) {
       var that = this
-      request.request(this.globalData.editableCard ? api.EditQuestions : api.QuestionsList, {cid: this.globalData.cid, page: this.page + 1, size: this.size}).then(res => {
-        console.log('request questions', res)
+      request.request(this.globalData.editableCard ? api.EditQuestions : api.QuestionsList, {cid: this.cid, page: this.page + 1, size: this.size}).then(res => {
         if (res.data.length > 0) {
           that.page += 1
-          that.questions = that.questions.concat(res.data.questions)
+          that.questions = that.questions.concat(res.data)
         } else {
-          that.total = that.page
+          that.total = that.questions.length
         }
+        console.log('questions length', that.questions.length)
+        console.log('total', that.total)
+        that.$forceUpdate()
 
         if (callback) {
           callback()
@@ -165,15 +168,29 @@ export default {
       })
     },
     submitComfirm: function () {
+      let uncheckIdxs = [];
+      console.log('answer', this.questions)
+      for (let i = 0; i < this.questions.length; i++) {
+        if (!this.answers[this.questions[i].qid] || this.answers[this.questions[i].qid].length === 0) {
+          uncheckIdxs.push(this.questions[i].index)
+        }
+      }
+      let uncheckStr = uncheckIdxs.length > 0 ? '你有以下题目未作答：\r\n' + uncheckIdxs.join(' ') + '\r\n' : ''
       var that = this
-      request.request(api.SubmitAnswer, {cid: this.cid, answers: this.answers}).then(res => {
-        that.globalData.showAnswer = true
-        that.compareAnswer = true
-        that.page = 1
-        for (let i = 0; i < that.questions.length; i++) {
-          let qid = that.questions[i].qid
-          if (res.data[qid]) {
-            that.questions[i].answer = res.data[qid]
+      wx.showModal({
+        content: uncheckStr + '确认提交答案',
+        success (res) {
+          if (res.confirm) {
+            request.request(api.SubmitAnswer, {cid: that.cid, answers: that.answers}).then(res => {
+              that.compareAnswer = true
+              console.log('questions', that.questions)
+              for (let i = 0; i < that.questions.length; i++) {
+                let qid = that.questions[i].qid
+                if (res.data[qid]) {
+                 that.questions[i].answer = res.data[qid]
+                }
+              }
+            })
           }
         }
       })
@@ -225,6 +242,18 @@ export default {
       const url = '/pages/question/main'
       mpvue.navigateTo({ url })
     },
+    // 通知上一页编辑成功
+    editSuccess: function () {
+      var pages = getCurrentPages()
+      var prevPage = pages[pages.length - 2]
+      prevPage.setData({
+        editSuccess: true
+      })
+      wx.navigateBack({
+        // 返回
+        delta: 1
+      })
+    },
     saveComfirm: function () {
       // 检测
       if (this.titleValue === '') {
@@ -246,46 +275,41 @@ export default {
           if (res.confirm) {
             if (that.cid) {
               // cid不为空则修改题库
-              that.request.request(api.SaveEdit, {cid: that.cid, questions: that.questions}).then(res => {
-
+              request.request(api.SaveEdit, {cid: that.cid, title: that.titleValue, questions: that.questions}).then(res => {
+                if (res.data.errno === 0) {
+                  that.editSuccess()
+                }
               })
             } else {
               // 否则为新建题库
-              that.request.request(api.AddCard, {questions: that.questions}).then(res => {
-
+              request.request(api.AddCard, {title: that.titleValue, questions: that.questions}).then(res => {
+                if (res.data.errno === 0) {
+                  that.editSuccess()
+                }
               })
             }
-
           }
         }
       })
     },
     comfirm: function () {
-      var that = this
-      if (that.editableCard) {
-        that.saveComfirm()
+      if (this.editableCard) {
+        this.saveComfirm()
+      } else if (this.compareAnswer) {
       } else {
-        wx.showModal({
-          content: '确认提交答案',
-          success (res) {
-            if (res.confirm) {
-              that.submitComfirm()
-            } else if (res.cancel) {
-            }
-          }
-        })
+        this.submitComfirm()
       }
     }
   },
   onLoad () {
+    this.cid = this.globalData.cid
     this.answers = {}
     this.compareAnswer = false
-    this.globalData.showAnswer = false
     this.loadedQsts = []
     this.page = 0
     this.questions = []
     var that = this
-    request.request(api.CardTotal, {cid: this.globalData.cid}).then(res => {
+    request.request(api.CardTotal, {cid: this.cid}).then(res => {
       that.total = res.data
     })
     this.loadQst()

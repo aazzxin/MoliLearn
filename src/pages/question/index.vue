@@ -109,7 +109,7 @@ export default {
           request.showErrorToast('请补充选项内容')
           return
         }
-        checkboxList.push({value: this.selections[i].value})
+        checkboxList.push(this.selections[i].value)
         if (this.selections[i].checked) {
           answer.push(i.toString())
         }
@@ -120,11 +120,11 @@ export default {
       }
       var pages = getCurrentPages()
       var prevPage = pages[pages.length - 2]
-      console.log('data', prevPage.data)
       prevPage.setData({
         editQst: {
           title: this.title,
           type: 'select',
+          single: !this.nonSingle,
           checkboxList: checkboxList,
           selectValue: answer
         }
@@ -138,7 +138,9 @@ export default {
   onLoad () {
     if (this.globalData.editQuestion) {
       this.title = this.globalData.editQuestion.title
-      this.selections = this.globalData.editQuestion.checkboxList
+      this.selections = this.globalData.editQuestion.checkboxList.map(item => {
+        return { value: item, checked: false };
+      });
       this.nonSingle = this.globalData.editQuestion.selectValue.length > 1
       for (let i = 0; i < this.globalData.editQuestion.selectValue.length; i++) {
         let idx = parseInt(this.globalData.editQuestion.selectValue[i])

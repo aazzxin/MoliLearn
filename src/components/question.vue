@@ -53,7 +53,6 @@ export default {
   },
   data () {
     return {
-      disabledCheck: false,
       editBtns: [
         {
           src: '/static/images/svgs/note.svg',
@@ -79,6 +78,9 @@ export default {
     }
   },
   computed: {
+    disabledCheck () {
+      return this.globalData.editableCard || this.showAnswer
+    },
     panelClass () {
       return `panel-main ${this.editStatue ? 'panel-main-edit' : ''}`
     },
@@ -89,7 +91,7 @@ export default {
   methods: {
     checkboxChange: function (value) {
       console.log('check:', value)
-      this.$emit('checkboxChange', this.qid, value)
+      this.$emit('checkboxChange', this.qid, this.index - 1, value)
     },
     edit: function () {
       if (this.globalData.editableCard) {
@@ -126,7 +128,7 @@ export default {
   },
   onLoad () {
     this.editStatue = false
-    this.disabledCheck = this.globalData.editableCard
+    console.log('checkbox list', this.checkboxList)
   }
 }
 </script>

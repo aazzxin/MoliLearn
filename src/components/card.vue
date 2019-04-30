@@ -4,7 +4,7 @@
       <navigator url="/pages/exam/main" @click="click" class="card" hover-class="weui-cell_active">
         <div class="weui-panel__hd">
           <div class="weui-media-box__info__meta">
-            <image src="/static/images/user.png" style="width: 20px;height: 20px;margin-right: 5px" />
+            <image :src="avatar ? avatar : '/static/images/user.png'" style="width: 20px;height: 20px;margin-right: 5px; border-radius: 50%;" />
           </div>
           <div class="publisher"> {{publisher}} </div>
           <div class="publish-time">{{time}}</div>
@@ -24,7 +24,7 @@
 
 <script>
 export default {
-  props: ['cid', 'title', 'publisher', 'time', 'coll'],
+  props: ['cid', 'title', 'avatar', 'publisher', 'time', 'coll'],
   methods: {
     click: function () {
       this.globalData.editableCard = false
@@ -47,9 +47,14 @@ export default {
   align-items: center;
   padding: 0%
 }
+.weui-media-box {
+  padding-top:5px;
+  padding-bottom: 5px;
+}
 .publisher {
   padding-right: 15px;
   color:cornflowerblue;
+  white-space: nowrap;
 }
 .publish-time {
   display: -webkit-box;

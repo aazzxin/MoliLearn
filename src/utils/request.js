@@ -42,8 +42,10 @@ function request (url, data = {}, method = 'GET') {
             }).catch((err) => {
               reject(err)
             })
-          } else {
+          } else if (res.data.errno === 0) {
             resolve(res.data)
+          } else {
+            showErrorToast(res.data.errmsg)
           }
         } else {
           reject(res.errMsg)

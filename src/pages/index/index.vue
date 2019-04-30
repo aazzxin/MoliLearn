@@ -5,7 +5,7 @@
     <div class="usermotto">
       <div class="weui-cells__title"></div>
       <div v-for="(item,index) in cards" :key="index" :id="index">
-        <card :title="item.title" :publisher="item.publisher" :time="item.time" :coll="item.coll"></card>
+        <card :cid="item.cid" :title="item.title" :avatar="item.avatar" :publisher="item.publisher" :time="item.time" :coll="item.coll"></card>
       </div>
     </div>
   </div>
@@ -53,14 +53,6 @@ export default {
   },
 
   methods: {
-    bindViewTap () {
-      const url = '../logs/main'
-      if (mpvuePlatform === 'wx') {
-        mpvue.switchTab({ url })
-      } else {
-        mpvue.navigateTo({ url })
-      }
-    },
     clickHandle (ev) {
       console.log('clickHandle:', ev)
       // throw {message: 'custom test'}

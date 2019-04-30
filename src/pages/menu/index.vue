@@ -28,11 +28,8 @@ export default {
   },
   data () {
     return {
-      active: true,
-      isCompanyAccount: !1,
-      showWechatFile: !0,
-      userAdvertBarShown: !1,
-      showSlot: true,
+      page: 0,
+      size: 10,
       items: [
         {
           coll: 155,
@@ -55,6 +52,13 @@ export default {
     }
   },
   methods: {
+    loadCards: function () {
+      var that = this
+      request.request(api.CardsMenu, {page: this.page, size: this.size}).then(res => {
+        console.log('request cards', res.data)
+        that.items = that.items.concat(res.data)
+      })
+    },
     onloadStatusChange: function (e) {
       var t = e.detail.status
       t === 'loaded' ? s() : t === 'loading' && h()
@@ -78,11 +82,16 @@ export default {
     }
   },
   onLoad () {
-    var that = this
-    request.request(api.CardsMenu).then(res => {
-      console.log('request cards', res.data)
-      that.items = res.data
-    })
+    this.page = 0
+    this.items = []
+    this.loadCards()
+  },
+  onShow () {
+    let pages = getCurrentPages()
+    let currPage = pages[pages.length - 1]
+    if (currPage.data.editSuccess && currPage.data.editSuccess === true) {
+
+    }
   }
 }
 </script>
