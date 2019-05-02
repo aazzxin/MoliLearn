@@ -130,6 +130,10 @@ export default {
       currPage.data.editSuccess = false
     }
   },
+  onPullDownRefresh () {
+    // 停止下拉动作
+    wx.stopPullDownRefresh()
+  },
   onReachBottom: function () {
     // Do something when page reach bottom.
     // 显示顶部刷新图标

@@ -63,6 +63,10 @@ export default {
   },
   onLoad () {
     this.login()
+  },
+  onPullDownRefresh () {
+    // 停止下拉动作
+    wx.stopPullDownRefresh()
   }
 }
 </script>

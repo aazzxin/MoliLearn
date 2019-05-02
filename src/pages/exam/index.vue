@@ -168,7 +168,7 @@ export default {
     submitComfirm: function () {
       let uncheckIdxs = [];
       console.log('answer', this.questions)
-      for (let i = 0; i < this.questions.length; i++) {
+      for (let i = 0; i < this.total; i++) {
         if (!this.answers[this.questions[i].qid] || this.answers[this.questions[i].qid].length === 0) {
           uncheckIdxs.push(this.questions[i].index)
         }
@@ -179,16 +179,25 @@ export default {
         content: uncheckStr + '确认提交答案',
         success (res) {
           if (res.confirm) {
-            request.request(api.SubmitAnswer, {cid: that.cid, answers: that.answers}).then(res => {
-              that.compareAnswer = true
-              console.log('questions', that.questions)
-              for (let i = 0; i < that.questions.length; i++) {
-                let qid = that.questions[i].qid
-                if (res.data[qid]) {
-                 that.questions[i].answer = res.data[qid]
+            if (that.total === 1) {
+              // 只有一个题目时， 调用提交一个回答即可
+              request.request(api.AnswerOne, {qid: that.questions[0].qid, answers: that.answers}).then(res => {
+                that.compareAnswer = true
+                console.log('questions', that.questions)
+                that.questions[0].answer = res.data
+              })              
+            } else {
+              request.request(api.SubmitAnswer, {cid: that.cid, answers: that.answers}).then(res => {
+                that.compareAnswer = true
+                console.log('questions', that.questions)
+                for (let i = 0; i < that.questions.length; i++) {
+                  let qid = that.questions[i].qid
+                  if (res.data[qid]) {
+                   that.questions[i].answer = res.data[qid]
+                  }
                 }
-              }
-            })
+              })
+            }
           }
         }
       })
@@ -318,11 +327,21 @@ export default {
     this.page = 0
     this.questions = []
     this.editIndex = -1
-    var that = this
-    request.request(api.CardTotal, {cid: this.cid}).then(res => {
-      that.total = res.data
-    })
-    this.loadQst()
+    const that = this
+    if (this.globalData.qid !== '') {
+      // 当存在全局qid，则是进入单个题目内容
+      request.request(api.OneQuestion, {qid: this.globalData.qid}).then(res => {
+        that.questions = that.questions.concat(res.data)
+        that.total = that.questions.length
+        that.globalData.qid = ''
+      })
+    } else {
+      // 否则是加载整个题库的题目列表
+      request.request(api.CardTotal, {cid: this.cid}).then(res => {
+        that.total = res.data
+      })
+      this.loadQst()
+    }
   },
   onShow () {
     let pages = getCurrentPages()

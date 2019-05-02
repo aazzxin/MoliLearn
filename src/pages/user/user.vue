@@ -19,15 +19,10 @@
       </div>
     </div>
     <div class="weui-panel">
-      <navigator url="" class="weui-cell weui-cell_access" hover-class="weui-cell_active">
+      <navigator :url="item.url" @click="item.coll ? clickColl() : clickNoncoll()" class="weui-cell weui-cell_access" hover-class="weui-cell_active" 
+        v-for="(item,index) in navInfo" :key="index" :id="index">
         <div class="weui-cell__bd weui-cell_primary">
-          <text>练习题库</text>
-        </div>
-        <div class="weui-cell__ft weui-cell__ft_in-access"></div>
-      </navigator>
-      <navigator url="" class="weui-cell weui-cell_access" hover-class="weui-cell_active">
-        <div class="weui-cell__bd weui-cell_primary">
-          <text>收藏题库</text>
+          <text>{{item.text}}</text>
         </div>
         <div class="weui-cell__ft weui-cell__ft_in-access"></div>
       </navigator>
@@ -59,17 +54,26 @@ export default {
       userInfo: {
         nickName: '请登录',
         avatarUrl: 'http://mpvue.com/assets/logo.png'
-      }
+      },
+      navInfo: [
+        {url: '/pages/cardlist/main', text:'历史浏览', coll: false},
+        {url: '/pages/cardlist/main', text:'收藏题库', coll: true},
+        {url: '/pages/qstlist/main', text:'收藏题目', coll: true},
+        {url: '/pages/qstlist/main', text:'错题本', coll: false},
+      ]
     }
   },
-
   methods: {
     clickHandle (ev) {
       console.log('clickHandle:', ev)
-      // throw {message: 'custom test'}
+    },
+    clickColl () {
+      this.globalData.collect = true
+    },
+    clickNoncoll () {
+      this.globalData.collect = false
     }
   },
-
   onLoad () {
     /**
      * 获取用户信息
@@ -86,6 +90,10 @@ export default {
       that.nums[2] = res.data.correctNum
     })
     this.$forceUpdate()
+  },
+  onPullDownRefresh () {
+    // 停止下拉动作
+    wx.stopPullDownRefresh()
   }
 }
 </script>

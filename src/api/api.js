@@ -15,7 +15,13 @@ export default {
 
   CardTotal: ApiRootUrl + 'cards/total', // 题库总题数
   QuestionsList: ApiRootUrl + 'questions/list', // 题目列表
-  SubmitAnswer: ApiRootUrl + 'questions/submit', // 提交答案
+  OneQuestion: ApiRootUrl + 'questions/one', // 单个问题
+  
+  SubmitAnswer: ApiRootUrl + 'answers/submit', // 提交答案, all answers for cid
+  AnswerOne: ApiRootUrl + 'answers/one', // 提交一个回答, a answer on qid
+  
+  CollQst: ApiRootUrl + 'questions/collList', // 收藏题目
+  WrongQst: ApiRootUrl + 'questions/wrongList', // 错题本
 
   CollectList: ApiRootUrl + 'collect/list', // 收藏列表
   CollectAddOrDelete: ApiRootUrl + 'collect/addordelete', // 添加或取消收藏

@@ -5,8 +5,9 @@
     "pages/menu/main",
     "pages/user/main",
     "pages/exam/main",
-    "pages/counter/main",
-    "pages/question/main"
+    "pages/question/main",
+    "pages/cardlist/main",
+    "pages/qstlist/main"
   ],
   "window": {
     "backgroundTextStyle": "light",

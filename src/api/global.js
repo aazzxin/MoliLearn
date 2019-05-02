@@ -6,7 +6,8 @@ const global = {
   },
   editQuestion: {
     title: ''
-  }
+  },
+  qid: ''
 }
 
 export default global
