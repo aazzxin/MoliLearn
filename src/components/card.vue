@@ -8,6 +8,7 @@
           </div>
           <div class="publisher"> {{publisher}} </div>
           <div class="publish-time">{{time}}</div>
+          <img :src="isColl ? '/static/images/star-active.png' : '/static/images/star.png'" class="collect-img" @click.stop="collect">
         </div>
         <div class="weui-panel__bd">
           <view class="weui-media-box weui-media-box_text">
@@ -23,12 +24,22 @@
 </template>
 
 <script>
+import request from '@/utils/request.js'
+import api from '@/api/api.js'
 export default {
-  props: ['cid', 'title', 'avatar', 'publisher', 'time', 'coll'],
+  props: ['index', 'cid', 'title', 'avatar', 'publisher', 'time', 'coll', 'isColl'],
   methods: {
     click: function () {
       this.globalData.editableCard = false
       this.globalData.editCard.cid = this.cid
+    },
+    collect () {
+      const that = this
+      request.request(api.CollectCard, {cid: this.cid, coll: this.isColl ? 0 : 1}).then(res => {
+        that.isColl = !that.isColl
+        request.showSuccessToast(that.isColl ? '收藏成功' : '成功取消收藏')
+        this.$emit('collect', that.index)
+      })
     }
   }
 }
@@ -66,5 +77,11 @@ export default {
   width: 100%;
   position: relative;
   border-left: 1px solid #cecece;
+}
+.collect-img {
+  text-align: right;
+  margin-right: 15px;
+  width: 30px;
+  height: 20px;
 }
 </style>

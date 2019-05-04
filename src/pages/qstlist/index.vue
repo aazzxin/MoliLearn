@@ -33,7 +33,7 @@ export default {
     },
     loadQst (callback) {
       const that = this
-      request.request(this.globalData.collect ? api.CollQst : api.WrongQst, {page: this.page + 1}).then(res => {
+      request.request(this.globalData.collect ? api.CollQstList : api.WrongQst, {page: this.page + 1}).then(res => {
         if (res.data.length > 0) {
           that.list = res.data
           that.page += 1

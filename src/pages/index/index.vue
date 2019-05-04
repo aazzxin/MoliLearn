@@ -5,7 +5,8 @@
     <div class="usermotto">
       <div class="weui-cells__title"></div>
       <div v-for="(item,index) in cards" :key="index" :id="index">
-        <card :cid="item.cid" :title="item.title" :avatar="item.avatar" :publisher="item.publisher" :time="item.time" :coll="item.coll"></card>
+        <card :index="index" :cid="item.cid" :title="item.title" :avatar="item.avatar" :publisher="item.publisher" :time="item.time" :coll="item.coll"
+        @collect="collect" :isColl="item.isColl"></card>
       </div>
     </div>
   </div>
@@ -77,6 +78,8 @@ export default {
     },
     confirm (ev) {
       console.log('confirm:', ev)
+    },
+    collect (index) {
     }
   },
   onLoad () {

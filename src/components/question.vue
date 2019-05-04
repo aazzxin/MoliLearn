@@ -93,6 +93,9 @@ export default {
       console.log('check:', value)
       this.$emit('checkboxChange', this.qid, this.index - 1, value)
     },
+    collect () {
+
+    },
     edit: function () {
       if (this.globalData.editableCard) {
         // this.editStatue = !this.editStatue

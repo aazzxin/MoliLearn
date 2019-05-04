@@ -20,11 +20,13 @@ export default {
   SubmitAnswer: ApiRootUrl + 'answers/submit', // 提交答案, all answers for cid
   AnswerOne: ApiRootUrl + 'answers/one', // 提交一个回答, a answer on qid
   
-  CollQst: ApiRootUrl + 'questions/collList', // 收藏题目
+  History: ApiRootUrl + 'cards/history', // 历史记录
+  CollCardList: ApiRootUrl +'cards/collList', // 收藏题库列表
+  CollQstList: ApiRootUrl + 'questions/collList', // 收藏题目列表
   WrongQst: ApiRootUrl + 'questions/wrongList', // 错题本
 
-  CollectList: ApiRootUrl + 'collect/list', // 收藏列表
-  CollectAddOrDelete: ApiRootUrl + 'collect/addordelete', // 添加或取消收藏
+  CollectCard: ApiRootUrl + 'collect/card', // 收藏题库
+  CollectQst: ApiRootUrl + 'collect/question', // 收藏题目
 
   CommentList: ApiRootUrl + 'comment/list', // 评论列表
   CommentCount: ApiRootUrl + 'comment/count', // 评论总数

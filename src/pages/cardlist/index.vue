@@ -26,7 +26,7 @@ export default {
   methods: {
     loadQst (callback) {
       const that = this
-      request.request(this.globalData.collect ? api.CollCard : api.history, {page: this.page + 1}).then(res => {
+      request.request(this.globalData.collect ? api.CollCardList : api.History, {page: this.page + 1}).then(res => {
         if (res.data.length > 0) {
           that.list = res.data
           that.page += 1
