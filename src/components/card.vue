@@ -27,7 +27,7 @@
 import request from '@/utils/request.js'
 import api from '@/api/api.js'
 export default {
-  props: ['index', 'cid', 'title', 'avatar', 'publisher', 'time', 'coll', 'isColl'],
+  props: ['cid', 'title', 'avatar', 'publisher', 'time', 'coll', 'isColl'],
   methods: {
     click: function () {
       this.globalData.editableCard = false
@@ -38,7 +38,6 @@ export default {
       request.request(api.CollectCard, {cid: this.cid, coll: this.isColl ? 0 : 1}).then(res => {
         that.isColl = !that.isColl
         request.showSuccessToast(that.isColl ? '收藏成功' : '成功取消收藏')
-        this.$emit('collect', that.index)
       })
     }
   }
@@ -56,7 +55,6 @@ export default {
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 0%
 }
 .weui-media-box {
   padding-top:5px;

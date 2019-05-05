@@ -6,7 +6,7 @@
     <div class="panel-exam">
       <div class="questions" v-for="(item,index) in questions" :key="index" :id="index">
         <question @edit="edit" :qid="item.qid" :index="index + 1" :title="item.title" :type="item.type" 
-        :checkboxList="item.checkboxList" :selectValue="item.selectValue" :single="item.single" @checkboxChange="checkboxChange"
+        :checkboxList="item.checkboxList" :selectValue="item.selectValue" :isColl="item.isColl" :single="item.single" @checkboxChange="checkboxChange"
         :answer="item.answer" :editStatue="editIndex===index" :showAnswer="compareAnswer"
         @doEdit="doEdit" @doCopy="doCopy" @doUpMove="doUpMove" @doDownMove="doDownMove" @doDelete="doDelete"></question>
       </div>

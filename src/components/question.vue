@@ -8,6 +8,7 @@
         <div class="question-title">
           {{title}}
         </div>
+        <img :src="isColl ? '/static/images/star-active.png' : '/static/images/star.png'" class="collect-img" @click.stop="collect">
       </div>
       <div class="answer-box">
         <div class="selection" v-if="type==='select'">
@@ -22,6 +23,8 @@
 </template>
 
 <script>
+import request from '@/utils/request.js'
+import api from '@/api/api.js'
 import mpCheckbox from 'mpvue-weui/src/checkbox'
 import mbutton from './mbutton'
 
@@ -40,6 +43,7 @@ export default {
     },
     single: Boolean,
     checkboxList: Array,
+    isColl: Boolean,
     answer: Array,
     selectValue: Array,
     editStatue: {
@@ -94,7 +98,11 @@ export default {
       this.$emit('checkboxChange', this.qid, this.index - 1, value)
     },
     collect () {
-
+      const that = this
+      request.request(api.CollectQst, {qid: this.qid, coll: this.isColl ? 0 : 1}).then(res => {
+        that.isColl = !that.isColl
+        request.showSuccessToast(that.isColl ? '收藏成功' : '成功取消收藏')
+      })
     },
     edit: function () {
       if (this.globalData.editableCard) {
@@ -193,6 +201,14 @@ export default {
 .question-title {
   font: 18px ;
   font-family: '微软雅黑';
+  width: 100%;
+  position: relative;
+}
+.collect-img {
+  text-align: right;
+  margin-right: 15px;
+  width: 20px;
+  height: 20px;
 }
 .answer-box {
   background: white;
