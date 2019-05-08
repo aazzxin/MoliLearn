@@ -1,8 +1,9 @@
 <template>
-  <div class="weui-panel">
-    <div class="weui-cell weui-cell_access" hover-class="weui-cell_active" 
+  <div class="panel">
+    <div class="weui-cells__title"
       v-for="(item,index) in list" :key="index" :id="index">
-      <card :cid="item.cid" :title="item.title" :avatar="item.avatar" :publisher="item.publisher" :time="item.time" :coll="item.coll"></card>
+      <card :cid="item.cid" :title="item.title" :avatar="item.avatar" :publisher="item.publisher" :time="item.time" :coll="item.coll"
+      :isColl="item.isColl"></card>
     </div>
   </div>
 </template>
@@ -11,12 +12,17 @@
 // Use Vuex
 import request from '@/utils/request.js'
 import api from '@/api/api.js'
+import card from '@/components/card'
 export default {
   data () {
     return {
       page: 0,
+      total: -1,
       list: []
     }
+  },
+  components: {
+    card
   },
   computed: {
     isLast () {
@@ -28,7 +34,7 @@ export default {
       const that = this
       request.request(this.globalData.collect ? api.CollCardList : api.History, {page: this.page + 1}).then(res => {
         if (res.data.length > 0) {
-          that.list = res.data
+          that.list = that.list.concat(res.data)
           that.page += 1
         } else {
           that.total = that.list.length
@@ -41,6 +47,8 @@ export default {
   },
   onLoad () {
     this.page = 0
+    this.total = -1
+    this.list = []
     this.loadQst()
   },
   onPullDownRefresh () {

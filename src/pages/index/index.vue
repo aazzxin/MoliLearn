@@ -1,12 +1,12 @@
 <template>
   <div @click="clickHandle">
-    <mp-searchbar :isFocus=true :inputValue="inputValue" :placeholder="placeholder" @input="input" @blur="blur" @focus="focus" @confirm="confirm"></mp-searchbar>
+    <mp-searchbar :isFocus="false" :inputValue="inputValue" :placeholder="placeholder" @input="input" @blur="blur" @focus="focus" @confirm="confirm"></mp-searchbar>
 
     <div class="usermotto">
       <div class="weui-cells__title"></div>
       <div v-for="(item,index) in cards" :key="index" :id="index">
         <card :cid="item.cid" :title="item.title" :avatar="item.avatar" :publisher="item.publisher" :time="item.time" :coll="item.coll"
-        @collect="collect" :isColl="item.isColl"></card>
+        :isColl="item.isColl"></card>
       </div>
     </div>
   </div>
@@ -23,6 +23,7 @@ export default {
     return {
       page: 1,
       inputValue: '',
+      searchKey: '',
       placeholder: '',
       cards: [
         {
@@ -39,12 +40,7 @@ export default {
           time: new Date().toLocaleDateString(),
           coll: 153
         }
-      ],
-      userInfo: {
-        nickName: 'mpvue',
-        avatarUrl: 'http://mpvue.com/assets/logo.png'
-      },
-      index: {}
+      ]
     }
   },
   components: {
@@ -55,7 +51,7 @@ export default {
     init (callback) {
       var that = this
       that.page = 1
-      request.request(api.IndexUrl).then(res => {
+      request.request(api.IndexUrl, {key: this.searchKey}).then(res => {
         console.log(res)
         that.cards = res.data
         if (callback) {
@@ -77,7 +73,9 @@ export default {
       console.log('focus:', ev)
     },
     confirm (ev) {
-      console.log('confirm:', ev)
+      console.log('confirm:', ev.mp.detail.value)
+      this.searchKey = ev.mp.detail.value
+      this.init()
     }
   },
   onLoad () {
@@ -109,7 +107,7 @@ export default {
     // Do something when page reach bottom.
     // 显示顶部刷新图标
     wx.showNavigationBarLoading()
-    request.request(api.IndexUrl, {'page': this.page + 1}).then(res => {
+    request.request(api.IndexUrl, {'page': this.page + 1, key: this.searchKey}).then(res => {
       console.log(res.data)
       that.cards = that.cards.concat(res.data)
       if (res.data.length > 0) {
@@ -126,13 +124,6 @@ export default {
 
 <style scoped>
 .usermotto {
-  margin-top: 20px;
-}
-
-.form-control {
-  display: block;
-  padding: 0 12px;
-  margin-bottom: 5px;
-  border: 1px solid #ccc;
+  margin-top: 5px;
 }
 </style>

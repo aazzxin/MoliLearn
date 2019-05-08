@@ -42,7 +42,7 @@ export default {
       titleValue: '',
       cid: '',
       page: 0,
-      total: 999,
+      total: -1,
       size: 5,
       editIndex: -1,
       questions: [
@@ -124,6 +124,8 @@ export default {
       ],
       answers: {
       },
+      qidMap: {},
+      deleteList: [],
       compareAnswer: false
     }
   },
@@ -153,6 +155,10 @@ export default {
         if (res.data.length > 0) {
           that.page += 1
           that.questions = that.questions.concat(res.data)
+          // 设置qid字段数量为1
+          for (let i = 0; i < res.data.length; i++) {
+            that.qidMap[res.data[i].qid] = 1
+          }
         } else {
           that.total = that.questions.length
         }
@@ -210,6 +216,7 @@ export default {
     doCopy: function () {
       let index = this.editIndex
       this.questions.splice(index, 0, this.questions[index])
+      this.qidMap[this.questions[index].qid] += 1
     },
     doUpMove: function () {
       let index = this.editIndex
@@ -237,6 +244,14 @@ export default {
         content: '确认删除',
         success (res) {
           if (res.confirm) {
+            var deleteQid = that.questions[that.editIndex].qid
+            if (deleteQid) {
+              // 考虑复制操作有多个重复qid的题目情况，只有删除最后的qid样本才计入删除
+              if (that.qidMap[deleteQid] === 1) {
+                that.deleteList.push(deleteQid)
+              }
+              that.qidMap[deleteQid] -= 1
+            }
             that.questions.splice(that.editIndex, 1)
             that.editIndex = -1
           }
@@ -283,7 +298,24 @@ export default {
           if (res.confirm) {
             if (that.cid) {
               // cid不为空则修改题库
-              request.request(api.SaveEdit, {cid: that.cid, title: that.titleValue, questions: that.questions}).then(res => {
+              let newList = []
+              let editList = []
+              let hasMap = new Set() // 对应的qid是否已经加入到编辑的题目列表中，重复的qid也视为新增题目
+              for (let i = 0; i < that.questions.length; i++) {
+                let qst = that.questions[i]
+                if (qst.qid) {
+                  if (hasMap.has(qst.qid)) {
+                    newList.push(qst)
+                  } else {
+                    hasMap.add(qst.qid)
+                    editList.push(qst)
+                  }
+                } else {
+                  newList.push(qst)
+                }
+              }
+              request.request(api.SaveEdit, {cid: that.cid, title: that.titleValue, editList: editList,
+                newList: newList, deleteList: that.deleteList.join(',')}).then(res => {
                 that.editSuccess()
               })
             } else {
@@ -325,8 +357,10 @@ export default {
     this.compareAnswer = false
     this.loadedQsts = []
     this.page = 0
+    this.total = -1
     this.questions = []
     this.editIndex = -1
+    this.deleteList = []
     const that = this
     if (this.globalData.qid !== '') {
       // 当存在全局qid，则是进入单个题目内容

@@ -55,6 +55,7 @@ export default {
   display: flex;
   flex-direction: row;
   align-items: center;
+  padding: 1px 15px;
 }
 .weui-media-box {
   padding-top:5px;
