@@ -6,7 +6,8 @@
           {{index}}.
         </div>
         <div class="question-title">
-          {{title}}
+          <textarea id="text-area" :value="title" :disabled="true" @linechange="textAreaLineChange" v-if="!showMask" :style="('height:' + txtHeight + 'px')"/>
+          <rich-text class='rich-text' :nodes="title" :style="('height:' + txtHeight + 'px')" v-else/>
         </div>
         <img :src="isColl ? '/static/images/star-active.png' : '/static/images/star.png'" class="collect-img" @click.stop="collect">
       </div>
@@ -78,7 +79,11 @@ export default {
           src: '/static/images/delete.png',
           text: '删除'
         }
-      ]
+      ],
+      titleWidth: 32,
+      titleHeight: 24.2,
+      showMask: true,
+      txtHeight: 24.2
     }
   },
   computed: {
@@ -90,6 +95,13 @@ export default {
     },
     editable () {
       return this.globalData.editableCard
+    },
+    qstStyle () {
+      console.log('text length', this.title.replace(/[^\x00-\xff]/g,"ab").length)
+      let height = Math.ceil(this.title.replace(/[^\x00-\xff]/g,"ab").length / this.titleWidth)
+      console.log('rows', height)
+      height *= this.titleHeight
+      return `height: ${height}px`
     }
   },
   methods: {
@@ -135,11 +147,20 @@ export default {
         default:
           break
       }
+    },
+    textAreaLineChange(e) {
+      console.log('change line',  e.mp.detail.lineCount)
+      this.txtHeight = (e.mp.detail.height)
+      this.showMask = true
     }
   },
   onLoad () {
     this.editStatue = false
+    this.titleWidth = Math.ceil((wx.getSystemInfoSync().windowWidth * 0.8) / 10.2)
+    console.log('width', this.titleWidth)
+    console.log('height', this.titleHeight)
     console.log('checkbox list', this.checkboxList)
+    this.showMask = false
   }
 }
 </script>
@@ -196,13 +217,35 @@ export default {
 .question-index {
   font: 20px bold;
   font-family: '微软雅黑';
-  padding-right: 1em;
+  padding-right: 0.5em;
 }
 .question-title {
-  font: 18px ;
-  font-family: '微软雅黑';
-  width: 100%;
+  width: 80%;
+  margin: 0 0;
   position: relative;
+}
+.question-title textarea{
+  width: 100%;
+  display: -webkit-box;
+  word-break: keep-all;
+  word-wrap: break-word;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  white-space: nowrap;
+  padding-right: 10px;
+}
+.question-title rich-text {
+  display: block;
+  white-space: pre-line;
+  width: 100%;
+  padding-right: 10px;
+}
+.rich-text rich-text {
+  overflow: hidden;
+  word-break:break-all;
+  word-wrap: break-word;
 }
 .collect-img {
   text-align: right;

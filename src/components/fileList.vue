@@ -11,7 +11,6 @@
       <fileItem @click="captureTapFileItem" @rename="rename" @refresh="refresh" :cid="file.cid" :coll="file.coll" :time="file.time" :total="file.total" :deviceid="file.deviceid" :ficon="file.ficon||ficon" :fid="file.id" :fname="file.fname" :fsize="file.fsize" :fsrc="file.fsrc" :ftype="file.ftype" :groupid="file.groupid" :highlightFname="file.title" :highlightSharer="file.highlight&&file.highlight.sharer_name" :index="index" :isbindTap="isbindTap" :linkgroupid="file.linkgroupid" :mtime="file.mtime" :mtime-recent="file.mtime_recent" :nobottomline="index===items.length-1&&lastOneNoBottomLine" :parentid="file.parentid" :path="file.path" :recent_members="file.recent_members" :selectedIndexs="selectedIndexs" :sharer="file.sharer" :showFrom="showFrom" :showModifyTime="showModifyTime" :showOperate="showOperate" :showRecentTime="showRecentTime" :showSelect="showSelect" :showSharer="showSharer" :showTeamAvatar="showTeamAvatar" :sid="file.sid" :type="type" :userRole="file.user_role" :wpsCourseId="file.store===19?file.storeid:''"></fileItem>
     </div>
     <slot v-if="showSlot"></slot>
-    <div class="loading" v-if="!noMoreText">{{loadMoreText}}</div>
   </scroll-view>
 </template>
 

@@ -50,6 +50,7 @@ export default {
   onLoad () {
     this.page = 0
     this.total = -1
+    this.list = []
     this.loadQst()
   },
   onPullDownRefresh () {

@@ -315,12 +315,12 @@ export default {
                 }
               }
               request.request(api.SaveEdit, {cid: that.cid, title: that.titleValue, editList: editList,
-                newList: newList, deleteList: that.deleteList.join(',')}).then(res => {
+                newList: newList, deleteList: that.deleteList.join(',')}, 'POST').then(res => {
                 that.editSuccess()
               })
             } else {
               // 否则为新建题库
-              request.request(api.AddCard, {title: that.titleValue, questions: that.questions}).then(res => {
+              request.request(api.AddCard, {title: that.titleValue, questions: that.questions}, 'POST').then(res => {
                 that.editSuccess()
               })
             }
@@ -470,6 +470,7 @@ export default {
   flex: auto;
   margin-top: 1.2em;
   background: #fff;
+  z-index: 99999;
 }
 .button-box {
   width: 100%;

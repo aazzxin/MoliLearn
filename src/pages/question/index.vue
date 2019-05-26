@@ -4,7 +4,7 @@
       <text class="desc-text">标题</text>
       <div class="input-bar">
         <div class="title-input">
-          <input class="weui-input" :placeholder="title !== '' ? '' : '输入标题'" v-model="title" @focus="inputFocus"></input>
+          <input class="weui-input" :placeholder="title !== '' ? '' : '输入标题'" v-model="title" :maxlength="255" @focus="inputFocus"></input>
         </div>
         <div class="bolck"></div>
       </div>
@@ -104,15 +104,21 @@ export default {
       }
       var checkboxList = []
       var answer = []
+      let qstLength = 2 // 包括[]字符，限制在400内
       for (let i = 0; i < this.selections.length; i++) {
         if (this.selections[i].value === '') {
           request.showErrorToast('请补充选项内容')
           return
         }
+        qstLength += this.selections[i].value.length
         checkboxList.push(this.selections[i].value)
         if (this.selections[i].checked) {
           answer.push(i.toString())
         }
+      }
+      if (qstLength + this.selections.length > 398) {
+        request.showErrorToast('选项内容过多')
+        return
       }
       if (answer.length === 0) {
         request.showErrorToast('勾选一个答案')
@@ -151,6 +157,7 @@ export default {
       this.selections = [{value: '', checked: false}]
       this.nonSingle = false
     }
+    this.$forceUpdate()
   }
 }
 </script>

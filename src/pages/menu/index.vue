@@ -11,7 +11,7 @@
       <img class="createImg" src="/static/images/create.png">
     </div>
     <div class="rename-panel" v-if="isRename">
-      <input class="rename-input" v-model="renameValue" :focus="isRename" @blur="blur"></input>
+      <input class="rename-input" v-model="renameValue" :maxlength="50" ="isRename" @blur="blur"></input>
       <mp-button @click="comfirm" type="primary" size="small" btnClass="renameBtn">确认</mp-button>
     </div>
   </div>
@@ -139,7 +139,7 @@ export default {
     // 显示顶部刷新图标
     if (!this.isLast) {
       wx.showNavigationBarLoading()
-      this.loadQst(function () {
+      this.loadCards(function () {
         // 隐藏导航栏加载框
         wx.hideNavigationBarLoading()
         // 停止下拉动作

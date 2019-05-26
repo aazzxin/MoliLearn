@@ -88,8 +88,8 @@ export default {
       that.nums[0] = res.data.collNum
       that.nums[1] = res.data.cardsNum
       that.nums[2] = res.data.correctNum
+      that.$forceUpdate()
     })
-    this.$forceUpdate()
   },
   onPullDownRefresh () {
     // 停止下拉动作
