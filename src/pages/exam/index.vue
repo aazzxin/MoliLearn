@@ -431,6 +431,7 @@ export default {
   flex-direction: column;
   width: 100%;
   height: 95%;
+  margin-bottom: 10px;
   background-color: #e5e5e5;
 }
 .questions {
@@ -468,7 +469,7 @@ export default {
   -webkit-box-flex: 1;
   -webkit-flex: auto;
   flex: auto;
-  margin-top: 1.2em;
+  margin-top: 1.5em;
   background: #fff;
   z-index: 99999;
 }

@@ -32,7 +32,7 @@
       <div class="single-bar">
         <text class="singleTxt">切换多选</text>
         <div class="singleSwitch">
-          <mp-switch v-model="nonSingle" @change="switchChange"></mp-switch>
+          <switch :checked="nonSingleValue" @change="switchChange"></switch>
         </div>
       </div>
     </div>
@@ -46,19 +46,17 @@
 
 <script>
 import mpButton from 'mpvue-weui/src/button'
-import mpSwitch from 'mpvue-weui/src/switch'
 import request from '@/utils/request.js'
 
 export default {
   components: {
-    mpButton,
-    mpSwitch
+    mpButton
   },
   data () {
     return {
       title: '',
       answerIndex: -1,
-      nonSingle: false,
+      nonSingle: null,
       selections: []
     }
   },
@@ -77,6 +75,12 @@ export default {
           this.selections[i].checked = false
         }
       }
+    }
+  },
+  computed: {
+    nonSingleValue () {
+      console.log('compute non single', this.nonSingle)
+      return this.nonSingle
     }
   },
   methods: {
@@ -139,9 +143,13 @@ export default {
         // 返回
         delta: 1
       })
+    },
+    switchChange: function (e) {
+      this.nonSingle = e.mp.detail.value
     }
   },
   onLoad () {
+    this.nonSingle = null
     if (this.globalData.editQuestion) {
       this.title = this.globalData.editQuestion.title
       this.selections = this.globalData.editQuestion.checkboxList.map(item => {
@@ -157,7 +165,10 @@ export default {
       this.selections = [{value: '', checked: false}]
       this.nonSingle = false
     }
+  },
+  onShow () {
     this.$forceUpdate()
+    console.log('nonsingle', this.nonSingle)
   }
 }
 </script>

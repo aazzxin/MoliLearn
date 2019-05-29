@@ -29,6 +29,7 @@ export default {
   methods: {
     clickQst (qid) {
       this.globalData.qid = qid
+      this.globalData.editableCard = false
       const url = '/pages/exam/main'
       mpvue.navigateTo({ url })
     },

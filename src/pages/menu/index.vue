@@ -148,6 +148,7 @@ export default {
     } else {
       // 停止下拉动作
       wx.stopPullDownRefresh()
+      wx.hideNavigationBarLoading()
     }
   }
 }
